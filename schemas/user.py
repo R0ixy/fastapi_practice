@@ -1,7 +1,5 @@
-from uuid import UUID
-
 from pydantic import BaseModel
-from pydantic import constr
+from pydantic import constr, UUID4
 
 
 class UserBase(BaseModel):
@@ -27,13 +25,16 @@ class UserCreate(UserBase):
     """
     password: str
 
+    # class Config:
+    #     orm_mode = True
+
 
 class User(UserBase):
     """
     User class for database interaction
     """
     user_id: int
-    user_uuid: UUID
+    user_uuid: UUID4
     hashed_password: str
     is_active: bool
 
