@@ -1,5 +1,7 @@
-from pydantic import BaseModel
-from pydantic import constr, UUID4
+from pydantic import BaseModel, constr, UUID4, EmailStr
+
+
+# from pydantic import constr, UUID4
 
 
 class UserBase(BaseModel):
@@ -8,15 +10,12 @@ class UserBase(BaseModel):
     """
     firstName: str
     lastName: str
-    email: constr(
-        regex=r'^[\w.+\-]+@gmail\.com$'
-    )
+    email: EmailStr
     phoneNumber: constr(
         strip_whitespace=True,
         regex=r'^\+?3?8?(0[5-9][0-9]\d{7})$'
     )
     # TODO fix phone regex to work with all numbers (Now working only with Ukrainian)
-    # TODO fix email regex to work all email domains (Now working only with gmail)
 
 
 class UserCreate(UserBase):
@@ -27,6 +26,11 @@ class UserCreate(UserBase):
 
     # class Config:
     #     orm_mode = True
+
+
+class UserLogIn(BaseModel):
+    email: EmailStr
+    password: str
 
 
 class User(UserBase):

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from core.security import get_password_hash
+from core.security import get_password_hash, verify_password
 from models import User
 from schemas import UserCreate
 from crud.base_crud import CRUDbase
@@ -26,6 +26,14 @@ class UserCRUD(CRUDbase):
         db.commit()
         db.refresh(db_user)
         return db_user
+
+    async def authenticate(self, db: Session, obj):
+        user = await self.get_by_email(db, obj.email)
+        if user is None:
+            return None
+        if not verify_password(obj.password, user.hashed_password):
+            return None
+        return user
 
 
 user_crud = UserCRUD(User)

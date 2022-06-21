@@ -1,4 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from endpoints.routes import api_router
@@ -9,6 +12,16 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 app.include_router(api_router, prefix='/api')
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    print(request)
+    print(exc.errors())
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content=jsonable_encoder({'detail':  'Incorrect input'}),
+    )
 
 
 app.mount("/", StaticFiles(directory="client/build", html=True), name="static")
