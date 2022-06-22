@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from crud import user_crud
-from schemas.user import UserCreate, User, UserLogIn
+from schemas.user import UserCreate, User
 from database import SessionLocal
 
 router = APIRouter()
@@ -39,12 +39,3 @@ async def create_user(user: UserCreate, db: Session = Depends(get_db)) -> User |
 
     return await user_crud.create_new(db, user)
 
-
-@router.post('/login/')
-async def login(user: UserLogIn, db: Session = Depends(get_db)):
-    user = await user_crud.authenticate(db, user)
-    if user is None:
-        raise HTTPException(status_code=400, detail='Incorrect email or password')
-    return user
-
-# TODO make jwt authorization
