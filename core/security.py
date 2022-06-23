@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-SECRET_KEY = "7f54dd73d45a2da9e15386ca54ea2ec8c7f490399a83b04ce8fa1b55ae1db22d"
+from core.config import SECRET_KEY
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
