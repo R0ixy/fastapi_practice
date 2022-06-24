@@ -1,34 +1,38 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from crud import user_crud
 from schemas.user import UserCreate, User
-from database import SessionLocal
+from database import get_session
 
 router = APIRouter()
 
 
-async def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+@router.get('/', response_model=list[User])
+async def get_many_users(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_session)):
+    """Get many user entries from the database
+
+    * `skip`: Number of entries to skip
+    * `limit`: Maximum number of entries to return
+    """
+
+    return await user_crud.get_many(db, skip, limit)
 
 
-@router.get('/')
-async def get_all_users(db: Session = Depends(get_db)):
-    return await user_crud.get_users(db)
+@router.get('/{uuid}', response_model=User)
+async def get_one_user(uuid: str, db: AsyncSession = Depends(get_session)):
+    """Get one user entry from database by uuid
 
+    * `uuid`: User uuid
+    """
 
-@router.get('/{uuid}')
-async def get_one_user(uuid: str, db: Session = Depends(get_db)):
     return await user_crud.get_by_uuid(db, uuid)
 
 
-@router.post('')
-@router.post('/')
-async def create_user(user: UserCreate, db: Session = Depends(get_db)) -> User | None:
+@router.post('/', response_model=User)
+async def create_user(user: UserCreate, db: AsyncSession = Depends(get_session)):
+    """Create new user in database"""
+
     db_user_by_email = await user_crud.get_by_email(db, user.email)
     if db_user_by_email:
         raise HTTPException(status_code=400, detail='Email is already registered')
@@ -39,3 +43,15 @@ async def create_user(user: UserCreate, db: Session = Depends(get_db)) -> User |
 
     return await user_crud.create_new(db, user)
 
+
+@router.delete('/{uuid}')
+async def delete_user(uuid: str, db: AsyncSession = Depends(get_session)):
+    """Delete one user entry from database by uuid
+
+    * `uuid`: User uuid
+    """
+
+    user = await user_crud.remove(db, uuid)
+    if user is None:
+        raise HTTPException(status_code=404, detail='Not found')
+    return user

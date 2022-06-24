@@ -1,9 +1,6 @@
 from pydantic import BaseModel, constr, UUID4, EmailStr
 
 
-# from pydantic import constr, UUID4
-
-
 class UserBase(BaseModel):
     """
     Base user class
@@ -29,16 +26,24 @@ class UserCreate(UserBase):
 
 
 class UserLogIn(BaseModel):
+    """User class with all fields for login"""
     email: EmailStr
     password: str
 
 
 class User(UserBase):
-    """
-    User class for database interaction
-    """
+    """User class with all fields for response"""
+    uuid: UUID4
+
+    class Config:
+        orm_mode = True
+
+
+class UserInDB(UserBase):
+    """User class with all fields for existing entry"""
+
     user_id: int
-    user_uuid: UUID4
+    uuid: UUID4
     hashed_password: str
     is_active: bool
 

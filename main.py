@@ -5,11 +5,21 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from endpoints.routes import api_router
-from database import Base, engine
+from database import db
 
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+
+@app.on_event('startup')
+async def startup():
+    await db.create_all()
+
+
+@app.on_event('shutdown')
+async def shutdown():
+    await db.close()
+
 
 app.include_router(api_router, prefix='/api')
 
@@ -20,7 +30,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     print(exc.errors())
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content=jsonable_encoder({'detail':  'Incorrect input'}),
+        content=jsonable_encoder({'detail': 'Incorrect input'}),
     )
 
 
@@ -28,6 +38,6 @@ app.mount("/", StaticFiles(directory="client/build", html=True), name="static")
 
 # For debugging
 # import uvicorn
-#
+
 # if __name__ == "__main__":
 #     uvicorn.run(app, host="localhost", port=8000)
