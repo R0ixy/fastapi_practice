@@ -23,7 +23,7 @@ class AsyncDatabaseSession:
         )
 
     def __getattr__(self, name):
-        return getattr(self.session, name)
+        return getattr(self.session(), name)
 
     async def create_all(self):
         async with self._engine.begin() as conn:

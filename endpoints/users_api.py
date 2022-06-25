@@ -3,7 +3,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from crud import user_crud
 from schemas.user import UserCreate, User
+import models
 from database import get_session
+from .deps import get_current_active_user
 
 router = APIRouter()
 
@@ -20,7 +22,11 @@ async def get_many_users(skip: int = 0, limit: int = 100, db: AsyncSession = Dep
 
 
 @router.get('/{uuid}', response_model=User)
-async def get_one_user(uuid: str, db: AsyncSession = Depends(get_session)):
+async def get_one_user(
+        uuid: str,
+        db: AsyncSession = Depends(get_session),
+        current_user: models.User = Depends(get_current_active_user)
+):
     """Get one user entry from database by uuid
 
     * `uuid`: User uuid
