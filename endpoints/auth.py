@@ -27,6 +27,7 @@ async def login_access_token(db: AsyncSession = Depends(get_session), form_data:
         raise HTTPException(status_code=400, detail="Inactive user")
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     return {
+        "uuid": user.uuid,
         "access_token": create_access_token(user.uuid, expires_delta=access_token_expires),
         "token_type": "bearer",
     }

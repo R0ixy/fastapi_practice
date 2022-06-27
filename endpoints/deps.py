@@ -21,7 +21,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        uuid = payload.get("sub")
+        uuid = payload.get("uuid")
         if uuid is None:
             raise credentials_exception
         token_data = TokenData(uuid=uuid)
