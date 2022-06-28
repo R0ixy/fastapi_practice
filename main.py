@@ -2,13 +2,14 @@ from fastapi import FastAPI, Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
+# from fastapi.staticfiles import StaticFiles
 
 from endpoints.routes import api_router
 from database import db
-
+from core.celery_config import celery_app
 
 app = FastAPI()
+celery = celery_app
 
 
 @app.on_event('startup')
