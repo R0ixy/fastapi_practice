@@ -64,5 +64,17 @@ class UserCRUD(CRUDbase):
         """Check if user is superuser"""
         return user.is_superuser
 
+    @staticmethod
+    async def set_active(db, user: User):
+        user.is_active = True
+        db.add(user)
+        try:
+            await db.commit()
+            await db.refresh(user)
+        except Exception:
+            await db.rollback()
+            raise
+        return None
+
 
 user_crud = UserCRUD(User)

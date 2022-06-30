@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from crud import user_crud
@@ -6,7 +6,8 @@ from schemas.user import UserCreate, User
 import models
 from database import get_session
 from .deps import get_current_active_user
-
+from utils import send_email_task
+from core.security import generate_email_token
 router = APIRouter()
 
 
@@ -36,7 +37,7 @@ async def get_one_user(
 
 
 @router.post('/', response_model=User)
-async def create_user(user: UserCreate, db: AsyncSession = Depends(get_session)):
+async def create_user(user: UserCreate, background_tasks: BackgroundTasks, db: AsyncSession = Depends(get_session)):
     """Create new user in database"""
 
     db_user_by_email = await user_crud.get_by_email(db, user.email)
@@ -47,6 +48,8 @@ async def create_user(user: UserCreate, db: AsyncSession = Depends(get_session))
     if db_user_by_phone:
         raise HTTPException(status_code=400, detail='Phone number is already registered')
 
+    token = generate_email_token(user.email)
+    background_tasks.add_task(send_email_task, user.email, token)
     return await user_crud.create_new(db, user)
 
 
