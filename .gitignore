@@ -130,7 +130,6 @@ dmypy.json
 .pyre/
 
 # frontend side folders
-client/
 
 node_modules/
 
