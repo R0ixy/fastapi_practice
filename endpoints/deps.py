@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_session
 from schemas.token import TokenData
-from core.config import SECRET_KEY
+from core.config import settings
 from core.security import ALGORITHM
 from models import User
 from crud import user_crud
@@ -20,7 +20,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
         uuid = payload.get("uuid")
         if uuid is None:
             raise credentials_exception

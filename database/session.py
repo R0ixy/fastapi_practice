@@ -1,9 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-from core.config import DB_USER, DB_PASSWORD, DB_HOST
+from core.config import settings
 
-SQLALCHEMY_DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/fastapi_practice"
+SQLALCHEMY_DATABASE_URL = \
+    f"postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}/fastapi_practice"
 
 
 Base = declarative_base()

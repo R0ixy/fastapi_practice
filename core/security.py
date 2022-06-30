@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
-from jose import jwt
+from jose import jwt, JWTError
 from passlib.context import CryptContext
 
-from core.config import SECRET_KEY
+from core.config import settings
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -25,5 +25,20 @@ def create_access_token(subject: str, expires_delta: timedelta | None = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode = {"exp": expire, "uuid": str(subject)}
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+def generate_email_token(email: str):
+    expire = datetime.utcnow() + timedelta(days=7)
+    to_encode = {"exp": expire, "email": email}
+    token = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
+    return token
+
+
+def verify_email_token(token: str):
+    try:
+        decode_token = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
+        return decode_token
+    except JWTError:
+        return None
