@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from core.security import settings
+from core.security import verify_password, get_password_hash
 from models import User
 from schemas import UserCreate
 from crud.base_crud import CRUDbase
@@ -33,7 +33,7 @@ class UserCRUD(CRUDbase):
             lastName=obj.lastName,
             phoneNumber=obj.phoneNumber,
             email=obj.email,
-            hashed_password=settings.get_password_hash(obj.password)
+            hashed_password=get_password_hash(obj.password)
         )
         db.add(db_user)
 
@@ -50,7 +50,7 @@ class UserCRUD(CRUDbase):
         user = await self.get_by_email(db, email)
         if user is None:
             return None
-        if not settings.verify_password(password, user.hashed_password):
+        if not verify_password(password, user.hashed_password):
             return None
         return user
 
