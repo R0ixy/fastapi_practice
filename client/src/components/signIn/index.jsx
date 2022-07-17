@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { TextField } from '@mui/material';
 import { Button } from '@mui/material'
+import { useNavigate } from "react-router-dom";
 
 import './signIn.css';
 import { login } from '../../services/domainRequest/auth';
 import { setLoginSession } from '../../services/authService';
-import {useNavigate} from "react-router-dom";
 
-export default function SignIn({ setIsLoggedIn }) {
+export default function SignIn() {
 
     const [username, setEmail] = useState();
     const [password, setPassword] = useState();

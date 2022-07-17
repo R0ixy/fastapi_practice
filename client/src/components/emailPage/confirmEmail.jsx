@@ -2,22 +2,24 @@ import React, {useEffect, useState} from 'react';
 import jwt_decode from 'jwt-decode';
 import {Button, CircularProgress} from '@mui/material';
 import {useNavigate, useParams} from 'react-router-dom';
-import {get} from '../../services/requestHelper';
+
 import './emailPage.css';
+import {get} from '../../services/requestHelper';
+
 
 export default function ConfirmEmail() {
 
     const [data, setData] = useState({data: []});
-
     const {token} = useParams();
     const navigate = useNavigate();
+
     useEffect(() => {
         const fetchData = async () => {
             const confirmation = await get('email/verify/', token);
-            setData(await confirmation.json());
+            return await confirmation.json();
         };
 
-        fetchData();
+        fetchData().then(data => {setData(data)});
     }, []);
 
     const sendNewEmail = async () => {

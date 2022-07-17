@@ -3,7 +3,6 @@ import {TextField} from '@mui/material';
 import { Button } from '@mui/material'
 
 import { createUser } from '../../services/domainRequest/userRequest';
-// import { setLoginSession } from '../../services/authService';
 import {useNavigate} from "react-router-dom";
 
 

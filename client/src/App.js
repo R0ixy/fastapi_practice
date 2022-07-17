@@ -1,18 +1,19 @@
 import React from 'react';
-import {Routes, Route} from 'react-router-dom'
-import Profile from './components/profile/index'
+import {Routes, Route} from 'react-router-dom';
+
+import './App.css';
 import SignInSignUpPage from './components/signInUpPage/index'
 import ConfirmEmail from './components/emailPage/confirmEmail'
 import SendEmail from "./components/emailPage/sendEmail";
-import './App.css';
+import StartScreen from "./components/startScreen";
 
 function App() {
 
     return (
         <Routes>
-            {/*<Route path='/' element={<StartScreen/>}/>*/}
+            <Route path='/profile' element={<StartScreen/>}/>
+
             <Route path='/' element={<SignInSignUpPage/>}/>
-            <Route path='/profile' element={<Profile/>}/>
             <Route path='/email/verify/:token' element={<ConfirmEmail/>}/>
             <Route path='/email/send/' element={<SendEmail/>}/>
         </Routes>
